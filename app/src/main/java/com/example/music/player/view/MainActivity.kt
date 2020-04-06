@@ -1,7 +1,8 @@
-package com.example.music.player
+package com.example.music.player.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.music.player.R
 
 class MainActivity : AppCompatActivity() {
 
