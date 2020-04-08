@@ -1,4 +1,4 @@
-package com.example.music.player.presenter
+package com.example.music.player.view.presenter
 
 interface BaseView {
     fun showLoading()

@@ -1,7 +1,7 @@
 package com.example.music.player.view
 
 import android.Manifest
-import android.content.ContentResolver
+import android.app.Activity
 import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -18,14 +18,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music.player.R
+import com.example.music.player.data.ContentResolverDSImpl
+import com.example.music.player.data.SongsRepositoryImpl
 import com.example.music.player.model.entity.Song
+import com.example.music.player.model.songs.SongsInteractorImpl
+import com.example.music.player.view.presenter.SongsPresenter
+import com.example.music.player.view.presenter.SongsPresenterImpl
+import com.example.music.player.view.presenter.SongsView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.FileNotFoundException
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity(), SongsView{
 
-    private val list = ArrayList<Song>()
+    private lateinit var presenter: SongsPresenter
 
 
     companion object {
@@ -37,23 +43,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
+        presenter = SongsPresenterImpl(SongsInteractorImpl(SongsRepositoryImpl(ContentResolverDSImpl(contentResolver))))
         if (ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-            ) {
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    READ_EXTERNAL_STORAGE_REQUEST
-                )
+                    READ_EXTERNAL_STORAGE_REQUEST)
             } else {
                 ActivityCompat.requestPermissions(
                     this,
@@ -62,54 +62,20 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         } else {
-            doStuff()
+            presenter.getSongs()
         }
     }
 
-    private fun getSongs() {
-        val contentResolver = contentResolver
-        val songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val songCursor = contentResolver.query(songUri, null, null, null, null)
-
-        if (songCursor != null && songCursor.moveToFirst()) {
-            val songTitle: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-            val songArtist: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-            val albumId: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-            val albumName: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-
-            do {
-                val currentSongAlbumId: Long = songCursor.getLong(albumId)
-                val currentTitle: String = songCursor.getString(songTitle)
-                val currentArtist: String = songCursor.getString(songArtist)
-                val currentSongAlbumName: String = songCursor.getString(albumName)
-                var songArtPath: String? = null
-                var songThumbnail: Bitmap? = null
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    songThumbnail = require(currentSongAlbumName)
-                } else {
-                    songArtPath = requireAndroidQ(currentSongAlbumId)
-                }
-
-                list.add(
-                    Song(
-                        currentArtist,
-                        currentTitle,
-                        songArtPath,
-                        songThumbnail
-                    )
-                )
-
-            } while (songCursor.moveToNext())
-            songCursor.close()
-        }
+    override fun onStart() {
+        super.onStart()
+        presenter.attachView(this)
     }
 
-    private fun doStuff() {
-        getSongs()
-        val adapter = SongAdapter(list)
-        vSongsList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        vSongsList.adapter = adapter
+    override fun onStop() {
+        super.onStop()
+        presenter.detachView()
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -124,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show()
-                    doStuff()
+                    presenter.getSongs()
                 }
             } else {
                 Toast.makeText(this, "No permission granted", Toast.LENGTH_SHORT).show()
@@ -134,57 +100,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requireAndroidQ(currentSongAlbumId: Long): String? {
-        val albumCursor = contentResolver.query(
-            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-            arrayOf(
-                MediaStore.Audio.Albums._ID,
-                MediaStore.Audio.Albums.ALBUM_ART
-            ),
-            MediaStore.Audio.Albums._ID + "=?",
-            arrayOf(currentSongAlbumId.toString()),
-            null
-        )
+    override fun displaySongs(songs: List<Song>) {
+        val adapter = SongAdapter(songs)
+        vSongsList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        vSongsList.adapter = adapter    }
 
-        val path = if (albumCursor != null && albumCursor.moveToFirst()) {
-            albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))
-        } else {
-            null
-        }
-        albumCursor?.close()
-        return path
+    override fun showLoading() {
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun require(songAlbumName: String): Bitmap? {
-        val albumUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
-        var bitmap: Bitmap? = null
-        val albumCursor: Cursor? = contentResolver.query(
-            albumUri,
-            null,
-            null,
-            null,
-            null
-        )
-        albumCursor?.use { cursor ->
-            val albumId: Int = cursor.getColumnIndex(MediaStore.Audio.Albums._ID)
-            val albumName: Int = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(albumId)
-                val currentAlbumName: String = cursor.getString(albumName)
-                if (currentAlbumName == songAlbumName) {
-                    val contentUri: Uri = ContentUris.withAppendedId(albumUri, id)
-                    try {
-                        bitmap = contentResolver.loadThumbnail(contentUri, Size(640, 640), null)
-                    } catch (ex: FileNotFoundException) {
-                        ex.printStackTrace()
-                    }
-                    break
-                }
-            }
-        }
-        albumCursor?.close()
-        return bitmap
+    override fun hideLoading() {
     }
+
+    override fun showError(error: Throwable?) {
+            Toast.makeText(this,error?.message?:"Uploading songs failed!",Toast.LENGTH_SHORT).show()
+    }
+
 
 }
