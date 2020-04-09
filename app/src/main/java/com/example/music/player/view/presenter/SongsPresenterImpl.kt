@@ -13,9 +13,9 @@ class SongsPresenterImpl(private val songsInteractor: SongsInteractor): SongsPre
     override fun getSongs() {
         view?.showLoading()
            val disposable =  songsInteractor.getSongs()
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doFinally { view?.hideLoading() }
+               .observeOn(AndroidSchedulers.mainThread())
+               .doFinally { view?.hideLoading() }
                 .subscribe({songs ->
                     view?.displaySongs(songs)
                 },{exception ->
