@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.music.player.R
 import com.example.music.player.model.entity.Song
-import com.example.music.player.view.MainActivity.Companion.IMAGE_URI
+import com.example.music.player.view.SongsFragment.Companion.IMAGE_URI
 
 class SongAdapter(private val songsList: List<Song>) :
     RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
