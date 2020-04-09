@@ -12,8 +12,9 @@ import androidx.annotation.RequiresApi
 import com.example.music.player.model.entity.Song
 import io.reactivex.Single
 import java.io.FileNotFoundException
+import javax.inject.Inject
 
-class ContentResolverDSImpl(private val contentResolver: ContentResolver) : SongsDataSource {
+class ContentResolverDSImpl @Inject constructor(var contentResolver: ContentResolver) : SongsDataSource {
     override fun getSongs(): Single<List<Song>> {
         return Single.fromCallable {
             val songsList = ArrayList<Song>()

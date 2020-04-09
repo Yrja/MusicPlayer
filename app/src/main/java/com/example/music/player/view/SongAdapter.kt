@@ -41,8 +41,6 @@ class SongAdapter(private val songsList: List<Song>) :
         fun bind(song: Song) {
             songName.text = song.songName
             songArtist.text = song.artistName
-
-
             Glide.with(context)
                 .load(song.imageUrl ?: song.imageBitmap ?: IMAGE_URI)
                 .centerCrop()

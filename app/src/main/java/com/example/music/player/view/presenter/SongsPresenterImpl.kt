@@ -4,8 +4,9 @@ import com.example.music.player.model.songs.SongsInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-class SongsPresenterImpl(private val songsInteractor: SongsInteractor): SongsPresenter {
+class SongsPresenterImpl @Inject constructor( var songsInteractor: SongsInteractor): SongsPresenter {
 
     override var view: SongsView? = null
     override var compositeDisposable = CompositeDisposable()

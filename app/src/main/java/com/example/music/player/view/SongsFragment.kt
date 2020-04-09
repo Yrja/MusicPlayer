@@ -1,5 +1,6 @@
 package com.example.music.player.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,18 +9,19 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music.player.R
-import com.example.music.player.data.ContentResolverDSImpl
-import com.example.music.player.data.SongsRepositoryImpl
 import com.example.music.player.model.entity.Song
-import com.example.music.player.model.songs.SongsInteractorImpl
 import com.example.music.player.view.presenter.SongsPresenter
-import com.example.music.player.view.presenter.SongsPresenterImpl
 import com.example.music.player.view.presenter.SongsView
+import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.songs_fragment.*
+import javax.inject.Inject
 
 class SongsFragment private constructor() : Fragment(), SongsView {
 
-    private lateinit var presenter: SongsPresenter
+    @Inject
+    lateinit var presenter: SongsPresenter
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,20 +31,23 @@ class SongsFragment private constructor() : Fragment(), SongsView {
         return inflater.inflate(R.layout.songs_fragment, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context)
         presenter.attachView(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter = SongsPresenterImpl(
-            SongsInteractorImpl(
-                SongsRepositoryImpl(
-                    ContentResolverDSImpl(activity!!.contentResolver)
-                )
-            )
-        )
+
+//        presenter = SongsPresenterImpl(
+//            SongsInteractorImpl(
+//                SongsRepositoryImpl(
+//                    ContentResolverDSImpl(activity!!.contentResolver)
+//                )
+//            )
+//        )
         presenter.getSongs()
     }
 

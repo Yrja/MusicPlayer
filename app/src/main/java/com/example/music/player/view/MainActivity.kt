@@ -8,10 +8,18 @@ import com.example.music.player.R
 import com.example.music.player.view.permission_helper.GetPermissionBinder
 import com.example.music.player.view.permission_helper.MutablePermissionsStream
 import com.example.music.player.view.permission_helper.PermissionResult
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HasAndroidInjector{
+
+    @Inject
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     private val compositeDisposable = CompositeDisposable()
     private val permissionsStream = MutablePermissionsStream()
@@ -19,8 +27,10 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val disposable =
             takeAudiosBinder.getPermissionResult(arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE))
                 .subscribe({
@@ -57,4 +67,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
     }
+
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 }
