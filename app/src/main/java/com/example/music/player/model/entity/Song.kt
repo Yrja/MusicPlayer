@@ -7,5 +7,4 @@ data class Song(
     val songName: String,
     val imageUrl: String?,
     val imageBitmap: Bitmap?
-
 )

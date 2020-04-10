@@ -13,11 +13,17 @@ import com.example.music.player.model.entity.Song
 import com.example.music.player.view.presenter.SongsPresenter
 import com.example.music.player.view.presenter.SongsView
 import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.songs_fragment.*
 import javax.inject.Inject
 
-class SongsFragment private constructor() : Fragment(), SongsView {
+class SongsFragment private constructor() : Fragment(), SongsView, HasAndroidInjector {
+
+    @Inject
+    lateinit var androidFragmentInjector: DispatchingAndroidInjector<Any>
 
     @Inject
     lateinit var presenter: SongsPresenter
@@ -33,7 +39,7 @@ class SongsFragment private constructor() : Fragment(), SongsView {
 
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this);
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
         presenter.attachView(this)
     }
@@ -83,4 +89,6 @@ class SongsFragment private constructor() : Fragment(), SongsView {
         Toast.makeText(activity, error?.message ?: "Uploading songs failed!", Toast.LENGTH_SHORT)
             .show()
     }
+
+    override fun androidInjector(): AndroidInjector<Any> = androidFragmentInjector
 }

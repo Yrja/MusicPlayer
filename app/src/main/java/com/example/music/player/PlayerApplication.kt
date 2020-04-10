@@ -1,7 +1,6 @@
 package com.example.music.player
 
 import android.app.Application
-import com.example.music.player.dagger.AppComponent
 import com.example.music.player.dagger.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -9,18 +8,18 @@ import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
 
-class PlayerApplication : Application(), HasAndroidInjector {
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
+class PlayerApplication : Application(), HasAndroidInjector{
 
-    lateinit var appComponent: AppComponent
+    @Inject
+   lateinit var dispatcher: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerAppComponent.create()
-        appComponent.inject(this)
+        DaggerAppComponent.builder()
+            .build()
+            .inject(this)
+
     }
 
-    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
-
+    override fun androidInjector(): AndroidInjector<Any> = dispatcher
 }
