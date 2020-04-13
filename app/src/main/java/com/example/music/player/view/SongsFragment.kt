@@ -12,7 +12,6 @@ import com.example.music.player.R
 import com.example.music.player.model.entity.Song
 import com.example.music.player.view.presenter.SongsPresenter
 import com.example.music.player.view.presenter.SongsView
-import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -47,13 +46,6 @@ class SongsFragment private constructor() : Fragment(), SongsView, HasAndroidInj
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        presenter = SongsPresenterImpl(
-//            SongsInteractorImpl(
-//                SongsRepositoryImpl(
-//                    ContentResolverDSImpl(activity!!.contentResolver)
-//                )
-//            )
-//        )
         presenter.getSongs()
     }
 
