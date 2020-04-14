@@ -1,52 +1,48 @@
 package com.example.music.player.view.permission_helper
 
-import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import io.reactivex.Completable
 
 class GetPermissionBinder(
     private val activity: Activity,
-    private val onPermissionResultStream: PermissionListener
+    private val onPermissionResultStream: PermissionListener,
+    private val fragment: Fragment
 ) : RequestPermissionsBinder {
 
-
-    override fun getPermissionResult(permissions: List<String>): Completable {
+    override fun requestPermission(permissions: List<String>): Completable {
         val requiredPermissions = mutableListOf<String>()
         requiredPermissions.addAll(permissions)
-
         if (requiredPermissions.isNotEmpty()) {
             val notGrantedPermissions =
                 requiredPermissions
                     .filter { element -> !activity.isPermissionGranted(element) }
                     .toTypedArray()
-         return   if (notGrantedPermissions.isNotEmpty()) {
-                ActivityCompat.requestPermissions(
-                    activity,
+            if (notGrantedPermissions.isNotEmpty()) {
+                fragment.requestPermissions(
                     notGrantedPermissions,
                     READ_EXTERNAL_STORAGE_REQUEST_CODE
                 )
-                 onPermissionResultStream.getPermissionResults()
+                return onPermissionResultStream.getPermissionResults()
                     .filter { it.requestCode == READ_EXTERNAL_STORAGE_REQUEST_CODE }
-                    .filter { it.grantResults.isNotEmpty() && it.grantResults[0] == PackageManager.PERMISSION_GRANTED }
-                    .filter {
-                        ContextCompat.checkSelfPermission(
-                            activity,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
+                    .doOnNext {
+                        if (it.grantResults.isNotEmpty()) {
+                            val existNonGrantedPermissionFlag = it.grantResults
+                                .contains(PackageManager.PERMISSION_DENIED)
+                            if (existNonGrantedPermissionFlag) {
+                                throw Exception()
+                            }
+                        }
                     }
                     .firstOrError()
                     .ignoreElement()
-            } else{
-                 Completable.complete()
             }
         }
-    return Completable.complete()
-}
+        return Completable.complete()
+    }
+
     companion object {
         private const val READ_EXTERNAL_STORAGE_REQUEST_CODE = 1
     }
-
 }

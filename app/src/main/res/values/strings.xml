@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MusicPlayer</string>
+    <string name="permission_not_granted_msg_text">No permission granted</string>
+    <string name="uploading_songs_msg_error">Uploading songs failed!</string>
+    <string name="permission_title">Please, grant permission for reading external storage.</string>
+    <string name="permission_message">Please, grant permission for reading external storage. We need it to display the list of songs from your device.</string>
+    <string name="close_view_button">not now</string>
+    <string name="grant_permision_button">OK</string>
 </resources>

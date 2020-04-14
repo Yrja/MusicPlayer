@@ -2,21 +2,17 @@ package com.example.music.player.view.presenter
 
 import io.reactivex.disposables.CompositeDisposable
 
-
 interface BasePresenter<V : BaseView> {
     var view: V?
     var compositeDisposable: CompositeDisposable
 
-    fun attachView(view: V){
+    fun attachView(view: V) {
         this.view = view
         compositeDisposable = CompositeDisposable()
     }
 
-    fun detachView(){
+    fun detachView() {
         view = null
-        if (!compositeDisposable.isDisposed){
-            compositeDisposable.dispose()
-            compositeDisposable.clear()
-        }
+        compositeDisposable.clear()
     }
 }

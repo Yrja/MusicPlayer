@@ -12,53 +12,65 @@ import androidx.annotation.RequiresApi
 import com.example.music.player.model.entity.Song
 import io.reactivex.Single
 import java.io.FileNotFoundException
-import javax.inject.Inject
 
 class ContentResolverDSImpl constructor(var contentResolver: ContentResolver) : SongsDataSource {
     override fun getSongs(): Single<List<Song>> {
         return Single.fromCallable {
-            val songsList = ArrayList<Song>()
-            val songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-            val songCursor = contentResolver.query(songUri, null, null, null, null)
-
-            if (songCursor != null && songCursor.moveToFirst()) {
-                val songTitle: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-                val songArtist: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-                val albumId: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-                val albumName: Int = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-
+            val songs = ArrayList<Song>()
+            val externalMediaStorageContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            val songsCursor =
+                contentResolver.query(externalMediaStorageContentUri, null, null, null, null)
+            if (songsCursor != null && songsCursor.moveToFirst()) {
+                val songTitleIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+                val songArtistIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+                val albumIdIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+                val albumNameIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
                 do {
-                    val currentSongAlbumId: Long = songCursor.getLong(albumId)
-                    val currentTitle: String = songCursor.getString(songTitle)
-                    val currentArtist: String = songCursor.getString(songArtist)
-                    val currentSongAlbumName: String = songCursor.getString(albumName)
-                    var songArtPath: String? = null
-                    var songThumbnail: Bitmap? = null
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        songThumbnail = requireAndroidQAPI(currentSongAlbumName)
-                    } else {
-                        songArtPath = apiLowerThanAndroidQ(currentSongAlbumId)
-                    }
-
-                    songsList.add(
-                        Song(
-                            currentArtist,
-                            currentTitle,
-                            songArtPath,
-                            songThumbnail
+                    songs.add(
+                        getSong(
+                            songTitleIndex,
+                            songArtistIndex,
+                            albumIdIndex,
+                            albumNameIndex,
+                            songsCursor
                         )
                     )
 
-                } while (songCursor.moveToNext())
-                songCursor.close()
-
+                } while (songsCursor.moveToNext())
+                songsCursor.close()
             }
-            songsList
+            songs
         }
     }
 
-    private fun apiLowerThanAndroidQ(currentSongAlbumId: Long): String? {
-        val albumCursor = contentResolver.query(
+    private fun getSong(
+        songTitleIndex: Int,
+        songArtistIndex: Int,
+        albumIdIndex: Int,
+        albumNameIndex: Int,
+        songsCursor: Cursor
+    ): Song {
+        val currentSongAlbumId: Long = songsCursor.getLong(albumIdIndex)
+        val currentSongTitle: String = songsCursor.getString(songTitleIndex)
+        val currentSongArtist: String = songsCursor.getString(songArtistIndex)
+        val currentSongAlbumName: String = songsCursor.getString(albumNameIndex)
+        var songArtPath: String? = null
+        var songThumbnail: Bitmap? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            songThumbnail = getAlbumArtApiQ(currentSongAlbumName)
+        } else {
+            songArtPath = getAlbumArtPathApiLowerQ(currentSongAlbumId)
+        }
+        return Song(
+            currentSongArtist,
+            currentSongTitle,
+            songArtPath,
+            songThumbnail
+        )
+    }
+
+    private fun getAlbumArtPathApiLowerQ(currentSongAlbumId: Long): String? {
+        val albumsCursor = contentResolver.query(
             MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
             arrayOf(
                 MediaStore.Audio.Albums._ID,
@@ -69,45 +81,44 @@ class ContentResolverDSImpl constructor(var contentResolver: ContentResolver) : 
             null
         )
 
-        val path = if (albumCursor != null && albumCursor.moveToFirst()) {
-            albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))
+        val path = if (albumsCursor != null && albumsCursor.moveToFirst()) {
+            albumsCursor.getString(albumsCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART))
         } else {
             null
         }
-        albumCursor?.close()
+        albumsCursor?.close()
         return path
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun requireAndroidQAPI(songAlbumName: String): Bitmap? {
-        val albumUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
+    fun getAlbumArtApiQ(songAlbumName: String): Bitmap? {
+        val externalAlbumsStorageContentUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
         var bitmap: Bitmap? = null
-        val albumCursor: Cursor? = contentResolver.query(
-            albumUri,
+        val albumsCursor: Cursor? = contentResolver.query(
+            externalAlbumsStorageContentUri,
             null,
             null,
             null,
             null
         )
-        albumCursor?.use { cursor ->
-            val albumId: Int = cursor.getColumnIndex(MediaStore.Audio.Albums._ID)
-            val albumName: Int = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
+        albumsCursor?.use { cursor ->
+            val albumIdIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Albums._ID)
+            val albumNameIndex: Int = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(albumId)
-                val currentAlbumName: String = cursor.getString(albumName)
+                val id = cursor.getLong(albumIdIndex)
+                val currentAlbumName: String = cursor.getString(albumNameIndex)
                 if (currentAlbumName == songAlbumName) {
-                    val contentUri: Uri = ContentUris.withAppendedId(albumUri, id)
+                    val contentUri: Uri =
+                        ContentUris.withAppendedId(externalAlbumsStorageContentUri, id)
                     try {
                         bitmap = contentResolver.loadThumbnail(contentUri, Size(640, 640), null)
                     } catch (ex: FileNotFoundException) {
-                        ex.printStackTrace()
                     }
                     break
                 }
             }
         }
-        albumCursor?.close()
+        albumsCursor?.close()
         return bitmap
     }
-
 }

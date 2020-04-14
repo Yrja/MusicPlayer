@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="song_item_margin">5dp</dimen>
+    <dimen name="song_image_corner_radius">4dp</dimen>
+    <dimen name="song_image_margin">10dp</dimen>
+    <dimen name="song_image_size">64dp</dimen>
+    <dimen name="song_info_container_margin">10dp</dimen>
+    <dimen name="song_artist_text_size">22sp</dimen>
+    <dimen name="song_name_text_size">18sp</dimen>
+    <dimen name="permission_not_granted_dimen">56dp</dimen>
+    <dimen name="outer_oval_padding">16dp</dimen>
+    <dimen name="inner_oval_padding">32dp</dimen>
+    <dimen name="icon_padding">45dp</dimen>
+    <dimen name="permission_icon_margin">32dp</dimen>
+    <dimen name="permission_title_margin">20dp</dimen>
+    <dimen name="permission_text_margin_top">15dp</dimen>
+    <dimen name="permission_title_text_size">25sp</dimen>
+    <dimen name="permission_text_size">18sp</dimen>
+    <dimen name="permission_btn_padding">10dp</dimen>
+    <dimen name="permission_btn_text_size">18sp</dimen>
+</resources>

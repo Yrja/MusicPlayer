@@ -7,7 +7,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-
 class PlayerApplication : Application(), HasAndroidInjector{
 
     @Inject
@@ -18,7 +17,6 @@ class PlayerApplication : Application(), HasAndroidInjector{
         DaggerAppComponent.builder()
             .build()
             .inject(this)
-
     }
 
     override fun androidInjector(): AndroidInjector<Any> = dispatcher

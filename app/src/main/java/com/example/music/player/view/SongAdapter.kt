@@ -1,23 +1,29 @@
 package com.example.music.player.view
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.music.player.R
 import com.example.music.player.model.entity.Song
-import com.example.music.player.view.SongsFragment.Companion.IMAGE_URI
+import com.example.music.player.view.image_helper.ImageLoader
+import kotlinx.android.synthetic.main.song_item.view.*
 
-class SongAdapter(private val songsList: List<Song>) :
+class SongAdapter(private val imageLoader: ImageLoader) :
     RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+
+    var songsList: List<Song> = ArrayList()
+        set(value) {
+            val songsDiffUtilCallback = SongsDiffUtilCallback(songsList, value)
+            val songsDiffResult = DiffUtil.calculateDiff(songsDiffUtilCallback)
+            field = value
+            songsDiffResult.dispatchUpdatesTo(this)
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.song_item, parent, false)
-        return SongViewHolder(view, parent.context)
+        return SongViewHolder(view, imageLoader)
     }
 
     override fun getItemCount(): Int {
@@ -32,23 +38,19 @@ class SongAdapter(private val songsList: List<Song>) :
         return songsList[position]
     }
 
-    class SongViewHolder(itemView: View, private val context: Context) :
+    class SongViewHolder(itemView: View, private val imageLoader: ImageLoader) :
         RecyclerView.ViewHolder(itemView) {
-        private val songName = itemView.findViewById<TextView>(R.id.vSongName)
-        private val songArtist = itemView.findViewById<TextView>(R.id.vSongArtist)
-        private val songImage = itemView.findViewById<ImageView>(R.id.vSongImage)
 
         fun bind(song: Song) {
-            songName.text = song.songName
-            songArtist.text = song.artistName
-            Glide.with(context)
-                .load(song.imageUrl ?: song.imageBitmap ?: IMAGE_URI)
-                .centerCrop()
-                .into(songImage)
-
-
+            itemView.apply {
+                vSongName.text = song.songName
+                vSongArtist.text = song.artistName
+                imageLoader.apply {
+                    song.imageUrl?.let {
+                        uploadImage(song.imageUrl, R.drawable.music_placeholder, vSongImage)
+                    } ?: uploadImage(song.imageBitmap, R.drawable.music_placeholder, vSongImage)
+                }
+            }
         }
-
     }
-
 }

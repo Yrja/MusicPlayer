@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 
-
 @Module
 interface AppModule {
     @ContributesAndroidInjector(modules = [AndroidSupportInjectionModule::class, MainActivityChildrenModule::class])

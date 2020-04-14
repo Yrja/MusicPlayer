@@ -6,7 +6,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 interface MainActivityChildrenModule {
-
     @ContributesAndroidInjector(modules = [SongsModule::class])
     fun provideSongsFragment():SongsFragment
 }

@@ -12,7 +12,7 @@ import com.example.music.player.view.presenter.SongsPresenter
 import com.example.music.player.view.presenter.SongsPresenterImpl
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
+import javax.inject.Singleton
 
 @Module
 class SongsModule {
