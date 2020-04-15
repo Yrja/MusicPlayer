@@ -6,4 +6,6 @@
     <string name="close_view_button">not now</string>
     <string name="grant_permision_button">OK</string>
     <string name="song_image_content_description">This is the song album image</string>
+    <string name="grant_result_error_message">Grant results are empty!</string>
+    <string name="no_granted_permissions_error_message">There are not granted permissions!</string>
 </resources>

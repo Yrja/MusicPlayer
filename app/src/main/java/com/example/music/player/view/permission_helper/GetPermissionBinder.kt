@@ -2,6 +2,7 @@ package com.example.music.player.view.permission_helper
 
 import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
+import com.example.music.player.R
 import io.reactivex.Completable
 
 class GetPermissionBinder(
@@ -39,10 +40,10 @@ class GetPermissionBinder(
             val existNonGrantedPermissionFlag = permissionResult.grantResults
                 .contains(PackageManager.PERMISSION_DENIED)
             if (existNonGrantedPermissionFlag) {
-                throw Exception()
+                throw Exception(fragment.getString(R.string.no_granted_permissions_error_message))
             }
         } else{
-            throw Exception()
+            throw Exception(fragment.getString(R.string.grant_result_error_message))
         }
     }
 
