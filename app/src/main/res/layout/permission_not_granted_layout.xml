@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/colorPrimaryLight"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/permission_icon_margin"
+        android:layout_weight="0.5"
+        android:src="@drawable/permission_not_granted"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/permission_title_margin"
+        android:layout_marginEnd="@dimen/permission_title_margin"
+        android:fontFamily="@font/arima_madurai_light"
+        android:gravity="center"
+        android:text="@string/permission_title"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/permission_title_text_size" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/permission_title_margin"
+        android:layout_marginTop="@dimen/permission_text_margin_top"
+        android:layout_marginEnd="@dimen/permission_title_margin"
+        android:fontFamily="@font/arima_madurai_light"
+        android:gravity="center"
+        android:text="@string/permission_message"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/permission_text_size" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/vDeclinePermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/permission_icon_margin"
+            android:layout_weight="0.5"
+            android:background="@drawable/rounded_corners_selector"
+            android:fontFamily="@font/arima_madurai_light"
+            android:gravity="center"
+            android:padding="@dimen/permission_btn_padding"
+            android:text="@string/close_view_button"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/permission_btn_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/vGrantPermission"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/vGrantPermission"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/permission_icon_margin"
+            android:layout_weight="0.5"
+            android:background="@drawable/rounded_corners_selector"
+            android:fontFamily="@font/arima_madurai_light"
+            android:gravity="center"
+            android:padding="@dimen/permission_btn_padding"
+            android:text="@string/grant_permision_button"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/permission_btn_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vDeclinePermission" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
