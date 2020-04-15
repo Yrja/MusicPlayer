@@ -1,12 +1,10 @@
 package com.example.music.player.view.permission_helper
 
-import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
 import io.reactivex.Completable
 
 class GetPermissionBinder(
-    private val activity: Activity,
     private val onPermissionResultStream: PermissionListener,
     private val fragment: Fragment
 ) : RequestPermissionsBinder {
@@ -17,7 +15,7 @@ class GetPermissionBinder(
         if (requiredPermissions.isNotEmpty()) {
             val notGrantedPermissions =
                 requiredPermissions
-                    .filter { element -> !activity.isPermissionGranted(element) }
+                    .filter { element -> fragment.activity?.isPermissionGranted(element) == false}
                     .toTypedArray()
             if (notGrantedPermissions.isNotEmpty()) {
                 fragment.requestPermissions(
@@ -43,6 +41,8 @@ class GetPermissionBinder(
             if (existNonGrantedPermissionFlag) {
                 throw Exception()
             }
+        } else{
+            throw Exception()
         }
     }
 

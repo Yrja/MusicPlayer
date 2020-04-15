@@ -1,7 +1,6 @@
 package com.example.music.player.view
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,11 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music.player.R
 import com.example.music.player.model.entity.Song
 import com.example.music.player.view.image_helper.ImageLoader
-import com.example.music.player.view.image_helper.ImageLoaderImpl
-import com.example.music.player.view.permission_helper.GetPermissionBinder
-import com.example.music.player.view.permission_helper.MutablePermissionsStream
-import com.example.music.player.view.permission_helper.PermissionResult
-import com.example.music.player.view.permission_helper.RequestPermissionsBinder
+import com.example.music.player.view.permission_helper.*
 import com.example.music.player.view.presenter.BaseFragment
 import com.example.music.player.view.presenter.SongsPresenter
 import com.example.music.player.view.presenter.SongsView
@@ -26,14 +21,22 @@ import kotlinx.android.synthetic.main.songs_fragment.*
 import javax.inject.Inject
 
 class SongsFragment private constructor() : SongsView, BaseFragment() {
-
     @Inject
     lateinit var presenter: SongsPresenter
-    private lateinit var imageLoader: ImageLoader
-    private val compositeDisposable = CompositeDisposable()
-    private val permissionsStream = MutablePermissionsStream()
-    private lateinit var takeAudiosBinder: RequestPermissionsBinder
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
+    @Inject
+    lateinit var permissionsListener: PermissionListener
+
+    @Inject
+    lateinit var permissionsStream: PermissionsStream
+
+    @Inject
+    lateinit var requestPermissionsBinder: RequestPermissionsBinder
     private lateinit var songsAdapter: SongAdapter
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,8 +58,6 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        takeAudiosBinder = GetPermissionBinder(activity as Activity, permissionsStream, this)
-        imageLoader = ImageLoaderImpl()
         checkWorkingConditions()
         songsAdapter = SongAdapter(imageLoader)
         vSongsList.apply {
@@ -68,7 +69,7 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
 
     private fun checkWorkingConditions() {
         val disposable =
-            takeAudiosBinder.requestPermission(arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            requestPermissionsBinder.requestPermission(arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE))
                 .subscribe({
                     presenter.getSongs()
                 }, {

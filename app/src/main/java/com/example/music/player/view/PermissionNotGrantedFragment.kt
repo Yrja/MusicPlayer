@@ -1,25 +1,33 @@
 package com.example.music.player.view
 
 import android.Manifest
-import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.music.player.R
-import com.example.music.player.view.permission_helper.GetPermissionBinder
-import com.example.music.player.view.permission_helper.MutablePermissionsStream
+import com.example.music.player.view.permission_helper.PermissionListener
 import com.example.music.player.view.permission_helper.PermissionResult
+import com.example.music.player.view.permission_helper.PermissionsStream
 import com.example.music.player.view.permission_helper.RequestPermissionsBinder
 import com.example.music.player.view.presenter.BaseFragment
+import dagger.android.support.AndroidSupportInjection
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.permission_not_granted_layout.*
+import javax.inject.Inject
 
 class PermissionNotGrantedFragment private constructor() : BaseFragment(), View.OnClickListener {
-
     private val compositeDisposable = CompositeDisposable()
-    private val permissionsStream = MutablePermissionsStream()
-    private lateinit var takeAudiosBinder: RequestPermissionsBinder
+
+    @Inject
+    lateinit var permissionsListener: PermissionListener
+
+    @Inject
+    lateinit var permissionsStream: PermissionsStream
+
+    @Inject
+    lateinit var requestPermissionsBinder: RequestPermissionsBinder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,7 +41,11 @@ class PermissionNotGrantedFragment private constructor() : BaseFragment(), View.
         super.onViewCreated(view, savedInstanceState)
         vDeclinePermission.setOnClickListener(this)
         vGrantPermission.setOnClickListener(this)
-        takeAudiosBinder = GetPermissionBinder(activity as Activity, permissionsStream, this)
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onClick(v: View?) {
@@ -49,11 +61,11 @@ class PermissionNotGrantedFragment private constructor() : BaseFragment(), View.
 
     private fun checkWorkingConditions() {
         val disposable =
-            takeAudiosBinder.requestPermission(arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            requestPermissionsBinder.requestPermission(arrayListOf(Manifest.permission.READ_EXTERNAL_STORAGE))
                 .subscribe({
-                   if (activity is NavigationRouter){
-                       (activity as NavigationRouter).navigateToSongsFragment()
-                   }
+                    if (activity is NavigationRouter) {
+                        (activity as NavigationRouter).navigateToSongsFragment()
+                    }
                 }, {
                     activity?.apply {
                         finish()
