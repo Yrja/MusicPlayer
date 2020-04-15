@@ -1,7 +1,7 @@
 package com.example.music.player.dagger
 
 import androidx.fragment.app.Fragment
-import com.example.music.player.view.SongsFragment
+import com.example.music.player.view.songs.SongsFragment
 import dagger.Module
 import dagger.Provides
 

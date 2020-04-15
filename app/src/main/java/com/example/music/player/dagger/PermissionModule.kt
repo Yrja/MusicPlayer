@@ -7,7 +7,7 @@ import dagger.Provides
 
 @Module
 class PermissionModule {
-    @PermissionScope
+    @SongsScope
     @Provides
     fun provideMutablePermissionStream(): MutablePermissionsStream = MutablePermissionsStream()
 
@@ -19,7 +19,7 @@ class PermissionModule {
     fun providePermissionListener(mutablePermissionStream: MutablePermissionsStream): PermissionListener =
         mutablePermissionStream
 
-    @PermissionScope
+    @SongsScope
     @Provides
     fun providePermissionBinder(
         permissionListener: PermissionListener,

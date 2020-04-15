@@ -1,4 +1,4 @@
-package com.example.music.player.view
+package com.example.music.player.view.songs
 
 import android.Manifest
 import android.content.Context
@@ -10,11 +10,12 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music.player.R
 import com.example.music.player.model.entity.Song
+import com.example.music.player.view.NavigationRouter
 import com.example.music.player.view.image_helper.ImageLoader
 import com.example.music.player.view.permission_helper.*
 import com.example.music.player.view.presenter.BaseFragment
-import com.example.music.player.view.presenter.SongsPresenter
-import com.example.music.player.view.presenter.SongsView
+import com.example.music.player.view.presenter.songs.SongsPresenter
+import com.example.music.player.view.presenter.songs.SongsView
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.songs_fragment.*
@@ -59,7 +60,11 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkWorkingConditions()
-        songsAdapter = SongAdapter(imageLoader)
+        songsAdapter =
+            SongAdapter(imageLoader) {
+                if (activity is NavigationRouter)
+                    (activity as NavigationRouter).navigateToSongPlayer(it)
+            }
         vSongsList.apply {
             layoutManager =
                 LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)

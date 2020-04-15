@@ -1,4 +1,4 @@
-package com.example.music.player.view.presenter
+package com.example.music.player.view.presenter.songs
 
 import com.example.music.player.model.songs.SongsInteractor
 import io.reactivex.android.schedulers.AndroidSchedulers

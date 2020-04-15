@@ -5,8 +5,8 @@ import com.example.music.player.model.songs.SongsInteractor
 import com.example.music.player.model.songs.SongsInteractorImpl
 import com.example.music.player.view.image_helper.ImageLoader
 import com.example.music.player.view.image_helper.ImageLoaderImpl
-import com.example.music.player.view.presenter.SongsPresenter
-import com.example.music.player.view.presenter.SongsPresenterImpl
+import com.example.music.player.view.presenter.songs.SongsPresenter
+import com.example.music.player.view.presenter.songs.SongsPresenterImpl
 import dagger.Module
 import dagger.Provides
 
@@ -14,7 +14,9 @@ import dagger.Provides
 class SongsModule {
     @Provides
     fun provideSongsPresenter(songsInteractor: SongsInteractor): SongsPresenter =
-        SongsPresenterImpl(songsInteractor)
+        SongsPresenterImpl(
+            songsInteractor
+        )
 
     @Provides
     fun provideSongsInteractor(songsRepository: SongsRepository): SongsInteractor =

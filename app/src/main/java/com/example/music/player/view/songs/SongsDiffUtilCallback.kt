@@ -1,4 +1,4 @@
-package com.example.music.player.view
+package com.example.music.player.view.songs
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.music.player.model.entity.Song

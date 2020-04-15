@@ -1,4 +1,4 @@
-package com.example.music.player.view
+package com.example.music.player.view.songs
 
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +10,16 @@ import com.example.music.player.model.entity.Song
 import com.example.music.player.view.image_helper.ImageLoader
 import kotlinx.android.synthetic.main.song_item.view.*
 
-class SongAdapter(private val imageLoader: ImageLoader) :
+class SongAdapter(private val imageLoader: ImageLoader, private val listener: (song: Song) -> Unit) :
     RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     var songsList: List<Song> = ArrayList()
         set(value) {
-            val songsDiffUtilCallback = SongsDiffUtilCallback(songsList, value)
+            val songsDiffUtilCallback =
+                SongsDiffUtilCallback(
+                    songsList,
+                    value
+                )
             val songsDiffResult = DiffUtil.calculateDiff(songsDiffUtilCallback)
             field = value
             songsDiffResult.dispatchUpdatesTo(this)
@@ -23,7 +27,10 @@ class SongAdapter(private val imageLoader: ImageLoader) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.song_item, parent, false)
-        return SongViewHolder(view, imageLoader)
+        return SongViewHolder(
+            view,
+            imageLoader
+        )
     }
 
     override fun getItemCount(): Int {
@@ -31,7 +38,11 @@ class SongAdapter(private val imageLoader: ImageLoader) :
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val item = getItem(position)
+        holder.itemView.setOnClickListener {
+            listener.invoke(item)
+        }
+        holder.bind(item)
     }
 
     private fun getItem(position: Int): Song {
