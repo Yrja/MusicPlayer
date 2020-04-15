@@ -4,7 +4,7 @@ import com.example.music.player.model.SongsRepository
 import com.example.music.player.model.entity.Song
 import io.reactivex.Single
 
-class SongsInteractorImpl(private var repository: SongsRepository) :
+class SongsInteractorImpl(private val repository: SongsRepository) :
     SongsInteractor {
 
     override fun getSongs(): Single<List<Song>> {

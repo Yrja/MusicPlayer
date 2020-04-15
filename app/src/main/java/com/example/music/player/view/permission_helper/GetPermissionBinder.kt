@@ -27,19 +27,23 @@ class GetPermissionBinder(
                 return onPermissionResultStream.getPermissionResults()
                     .filter { it.requestCode == READ_EXTERNAL_STORAGE_REQUEST_CODE }
                     .doOnNext {
-                        if (it.grantResults.isNotEmpty()) {
-                            val existNonGrantedPermissionFlag = it.grantResults
-                                .contains(PackageManager.PERMISSION_DENIED)
-                            if (existNonGrantedPermissionFlag) {
-                                throw Exception()
-                            }
-                        }
+                        checkIfAllPermissionsGranted(it)
                     }
                     .firstOrError()
                     .ignoreElement()
             }
         }
         return Completable.complete()
+    }
+
+    private fun checkIfAllPermissionsGranted(permissionResult: PermissionResult) {
+        if (permissionResult.grantResults.isNotEmpty()) {
+            val existNonGrantedPermissionFlag = permissionResult.grantResults
+                .contains(PackageManager.PERMISSION_DENIED)
+            if (existNonGrantedPermissionFlag) {
+                throw Exception()
+            }
+        }
     }
 
     companion object {

@@ -99,12 +99,6 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
         compositeDisposable.clear()
     }
 
-    companion object {
-        fun getInstance(): SongsFragment {
-            return SongsFragment()
-        }
-    }
-
     override fun displaySongs(songs: List<Song>) {
         songsAdapter.songsList = songs
     }
@@ -120,9 +114,15 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
     override fun showError(error: Throwable?) {
         Toast.makeText(
                 activity,
-                error?.message ?: getString(R.string.uploading_songs_msg_error),
+                error?.localizedMessage ?: getString(R.string.uploading_songs_msg_error),
                 Toast.LENGTH_SHORT
             )
             .show()
+    }
+
+    companion object {
+        fun getInstance(): SongsFragment {
+            return SongsFragment()
+        }
     }
 }

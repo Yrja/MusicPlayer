@@ -29,7 +29,7 @@
     </item>
     <item
         android:bottom="@dimen/icon_padding"
-        android:drawable="@drawable/ic_folder_"
+        android:drawable="@drawable/ic_folder"
         android:left="@dimen/icon_padding"
         android:right="@dimen/icon_padding"
         android:top="@dimen/icon_padding" />

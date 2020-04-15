@@ -13,7 +13,7 @@ import com.example.music.player.model.entity.Song
 import io.reactivex.Single
 import java.io.FileNotFoundException
 
-class ContentResolverDSImpl constructor(var contentResolver: ContentResolver) : SongsDataSource {
+class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSource {
     override fun getSongs(): Single<List<Song>> {
         return Single.fromCallable {
             val songs = ArrayList<Song>()
