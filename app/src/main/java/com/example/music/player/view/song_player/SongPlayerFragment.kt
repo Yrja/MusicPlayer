@@ -1,5 +1,9 @@
 package com.example.music.player.view.song_player
 
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +28,15 @@ class SongPlayerFragment private constructor() : BaseFragment(), BaseView {
         super.onViewCreated(view, savedInstanceState)
         val song: Song? = arguments?.getParcelable(SONG_PARCELABLE_KEY)
         uri.text = song?.songContentUri.toString()
+
+
+//        val mediaPlayer: MediaPlayer? = MediaPlayer().apply {
+//            setAudioAttributes(AudioAttributes.Builder().build())
+//            setDataSource(context!!, song!!.songContentUri)
+//            prepare()
+//            start()
+//        }
+
     }
 
     override fun showLoading() {
