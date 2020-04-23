@@ -19,9 +19,10 @@ import com.example.music.player.view.presenter.songs.SongsView
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.songs_fragment.*
+import kotlinx.android.synthetic.main.view_sliding_header.*
 import javax.inject.Inject
 
-class SongsFragment private constructor() : SongsView, BaseFragment() {
+class SongsFragment private constructor() : SongsView, BaseFragment(), View.OnClickListener {
     @Inject
     lateinit var presenter: SongsPresenter
 
@@ -60,11 +61,19 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkWorkingConditions()
-        songsAdapter =
-            SongAdapter(imageLoader) {
-                if (activity is NavigationRouter)
-                    (activity as NavigationRouter).navigateToSongPlayer(it)
+        playSongBtn.setOnClickListener(this)
+
+        songsAdapter = SongAdapter(imageLoader) { song ->
+            presenter.playSong(song)
+            vSlidingSongName.text = song.songName
+            vSlidingArtistName.text = song.artistName
+            imageLoader.uploadImage(R.drawable.ic_pause, playSongBtn)
+            imageLoader.apply {
+                song.imageUrl?.let {
+                    uploadImage(song.imageUrl, R.drawable.music_placeholder, vSlidingSongImage)
+                } ?: uploadImage(song.imageBitmap, R.drawable.music_placeholder, vSlidingSongImage)
             }
+        }
         vSongsList.apply {
             layoutManager =
                 LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
@@ -103,6 +112,7 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
         super.onStop()
         presenter.detachView()
         compositeDisposable.clear()
+        presenter.releaseMediaPlayer()
     }
 
     override fun displaySongs(songs: List<Song>) {
@@ -119,16 +129,30 @@ class SongsFragment private constructor() : SongsView, BaseFragment() {
 
     override fun showError(error: Throwable?) {
         Toast.makeText(
-                activity,
-                error?.localizedMessage ?: getString(R.string.uploading_songs_msg_error),
-                Toast.LENGTH_SHORT
-            )
+            activity,
+            error?.localizedMessage ?: getString(R.string.uploading_songs_msg_error),
+            Toast.LENGTH_SHORT
+        )
             .show()
     }
 
     companion object {
         fun getInstance(): SongsFragment {
             return SongsFragment()
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            playSongBtn.id -> {
+                if (presenter.isPlaying()) {
+                    presenter.pauseSong()
+                    imageLoader.uploadImage(R.drawable.ic_play, playSongBtn)
+                } else {
+                    presenter.restartPausedSong()
+                    imageLoader.uploadImage(R.drawable.ic_pause, playSongBtn)
+                }
+            }
         }
     }
 }

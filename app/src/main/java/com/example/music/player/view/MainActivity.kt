@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.music.player.R
-import com.example.music.player.model.entity.Song
-import com.example.music.player.view.song_player.SongPlayerFragment
 import com.example.music.player.view.songs.SongsFragment
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -34,10 +32,6 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector, NavigationRouter {
 
     override fun navigateToPermissionFragment() {
         replaceFragment(PermissionNotGrantedFragment.getInstance())
-    }
-
-    override fun navigateToSongPlayer(song: Song) {
-        replaceFragment(SongPlayerFragment.getInstance(song))
     }
 
     private fun replaceFragment(fragment: Fragment) {
