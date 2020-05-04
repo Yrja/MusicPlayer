@@ -4,7 +4,7 @@ import com.example.music.player.model.entity.Song
 import com.example.music.player.view.presenter.BaseView
 
 interface SongsView : BaseView {
-    fun displaySongs(songs:List<Song>)
+    fun displaySongs(songs: List<Song>)
     fun setPausedImage()
     fun setPlayImage()
 }

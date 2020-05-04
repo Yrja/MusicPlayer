@@ -2,7 +2,7 @@ package com.example.music.player.view.presenter.songs
 
 import android.content.Context
 import com.example.music.player.model.entity.Song
-import com.example.music.player.model.entity.SongState
+import com.example.music.player.model.entity.MediaPlayerState
 import com.example.music.player.model.songs.SongsInteractor
 import com.example.music.player.view.songs.SongManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,21 +12,19 @@ import io.reactivex.schedulers.Schedulers
 class SongsPresenterImpl(
     private val songsInteractor: SongsInteractor,
     private val songManager: SongManager
-) :
-    SongsPresenter {
+) : SongsPresenter {
 
     override var view: SongsView? = null
     override var compositeDisposable = CompositeDisposable()
 
     override fun attachView(view: SongsView) {
         super.attachView(view)
-        val disposable = songManager.getMediaPlayerChanges().subscribe {
-            when (it) {
-                SongState.PLAY -> view.setPausedImage()
-                SongState.PAUSE -> view.setPlayImage()
-                null -> view.setPlayImage()
+        val disposable = songManager.getMediaPlayerChanges().subscribe({
+            when (it!!) {
+                MediaPlayerState.PLAY -> view.setPausedImage()
+                MediaPlayerState.PAUSE -> view.setPlayImage()
             }
-        }
+        }, {})
         compositeDisposable.add(disposable)
     }
 
@@ -50,7 +48,7 @@ class SongsPresenterImpl(
     }
 
     override fun pauseOrPlayCurrentSong() {
-        songManager.detectSongBehavior()
+        songManager.playOrPauseSong()
     }
 
     override fun destroy() {

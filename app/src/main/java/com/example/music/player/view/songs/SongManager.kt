@@ -4,14 +4,15 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import com.example.music.player.model.entity.Song
-import com.example.music.player.model.entity.SongState
+import com.example.music.player.model.entity.MediaPlayerState
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.Subject
 
 class SongManager {
     private var mediaPlayer: MediaPlayer = MediaPlayer()
     private var songIsPaused: Boolean = false
-    private val source = BehaviorSubject.create<SongState>()
+    private val source: Subject<MediaPlayerState> = BehaviorSubject.create()
 
     init {
         mediaPlayer.apply {
@@ -26,19 +27,19 @@ class SongManager {
             prepare()
             start()
         }
-        source.onNext(SongState.PLAY)
+        source.onNext(MediaPlayerState.PLAY)
     }
 
-    fun getMediaPlayerChanges(): Observable<SongState> {
+    fun getMediaPlayerChanges(): Observable<MediaPlayerState> {
         return source
     }
 
-    fun detectSongBehavior() {
+    fun playOrPauseSong() {
         if (mediaPlayer.isPlaying) {
-            source.onNext(SongState.PAUSE)
+            source.onNext(MediaPlayerState.PAUSE)
             pauseSong()
         } else {
-            source.onNext(SongState.PLAY)
+            source.onNext(MediaPlayerState.PLAY)
             restartPausedSong()
         }
     }
