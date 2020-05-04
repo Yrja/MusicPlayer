@@ -79,7 +79,7 @@
             android:fontFamily="@font/arima_madurai_light"
             android:gravity="center"
             android:padding="@dimen/permission_btn_padding"
-            android:text="@string/grant_permision_button"
+            android:text="@string/grant_permission_button"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="@dimen/permission_btn_text_size"

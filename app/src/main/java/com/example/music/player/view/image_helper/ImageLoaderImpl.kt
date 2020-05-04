@@ -19,4 +19,11 @@ class ImageLoaderImpl : ImageLoader {
             .centerCrop()
             .into(view)
     }
+
+    override fun uploadImage(imageResource: Int, view: ImageView) {
+        Glide.with(view)
+            .load(imageResource)
+            .centerCrop()
+            .into(view)
+    }
 }

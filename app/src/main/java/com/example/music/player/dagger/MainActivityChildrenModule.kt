@@ -1,17 +1,17 @@
 package com.example.music.player.dagger
 
 import com.example.music.player.view.PermissionNotGrantedFragment
-import com.example.music.player.view.SongsFragment
+import com.example.music.player.view.songs.SongsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
 interface MainActivityChildrenModule {
-    @PermissionScope
+    @SongsScope
     @ContributesAndroidInjector(modules = [SongsModule::class, PermissionModule::class, SongsFragmentCastModule::class])
     fun provideSongsFragment(): SongsFragment
 
-    @PermissionScope
+    @SongsScope
     @ContributesAndroidInjector(modules = [PermissionModule::class, PermissionFragmentCastModule::class])
     fun providePermissionNotGrantedFragment(): PermissionNotGrantedFragment
 }

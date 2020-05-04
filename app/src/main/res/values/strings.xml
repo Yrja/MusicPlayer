@@ -4,8 +4,8 @@
     <string name="permission_title">Please, grant permission for reading external storage.</string>
     <string name="permission_message">Please, grant permission for reading external storage. We need it to display the list of songs from your device.</string>
     <string name="close_view_button">not now</string>
-    <string name="grant_permision_button">OK</string>
-    <string name="song_image_content_description">This is the song album image</string>
+    <string name="grant_permission_button">OK</string>
+    <string name="song_image_content_description">Song album</string>
     <string name="grant_result_error_message">Grant results are empty!</string>
     <string name="no_granted_permissions_error_message">There are not granted permissions!</string>
 </resources>

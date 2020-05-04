@@ -13,7 +13,7 @@ import com.example.music.player.model.entity.Song
 import io.reactivex.Single
 import java.io.FileNotFoundException
 
-class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSource {
+class ContentResolverDSImpl(private val contentResolver: ContentResolver) : SongsDataSource {
     override fun getSongs(): Single<List<Song>> {
         return Single.fromCallable {
             val songs = ArrayList<Song>()
@@ -25,6 +25,7 @@ class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSou
                 val songArtistIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
                 val albumIdIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
                 val albumNameIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
+                val songIdIndex: Int = songsCursor.getColumnIndex(MediaStore.Audio.Media._ID)
                 do {
                     songs.add(
                         getSong(
@@ -32,6 +33,7 @@ class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSou
                             songArtistIndex,
                             albumIdIndex,
                             albumNameIndex,
+                            songIdIndex,
                             songsCursor
                         )
                     )
@@ -48,12 +50,18 @@ class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSou
         songArtistIndex: Int,
         albumIdIndex: Int,
         albumNameIndex: Int,
+        songIdIndex: Int,
         songsCursor: Cursor
     ): Song {
         val currentSongAlbumId: Long = songsCursor.getLong(albumIdIndex)
         val currentSongTitle: String = songsCursor.getString(songTitleIndex)
         val currentSongArtist: String = songsCursor.getString(songArtistIndex)
         val currentSongAlbumName: String = songsCursor.getString(albumNameIndex)
+        val currentSongId: Long = songsCursor.getLong(songIdIndex)
+        val songContentUri: Uri = ContentUris.withAppendedId(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            currentSongId
+        )
         var songArtPath: String? = null
         var songThumbnail: Bitmap? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -65,7 +73,8 @@ class ContentResolverDSImpl(var contentResolver: ContentResolver) : SongsDataSou
             currentSongArtist,
             currentSongTitle,
             songArtPath,
-            songThumbnail
+            songThumbnail,
+            songContentUri
         )
     }
 
