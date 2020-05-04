@@ -6,6 +6,7 @@ import com.example.music.player.data.ContentResolverDSImpl
 import com.example.music.player.data.SongsDataSource
 import com.example.music.player.data.SongsRepositoryImpl
 import com.example.music.player.model.SongsRepository
+import com.example.music.player.view.songs.SongManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -24,4 +25,8 @@ class RepositoryModule {
     @Provides
     fun provideContentResolver(app: PlayerApplication): ContentResolver =
         app.contentResolver
+
+    @Singleton
+    @Provides
+    fun provideSongManager(): SongManager = SongManager()
 }

@@ -18,7 +18,7 @@ import com.example.music.player.view.presenter.songs.SongsPresenter
 import com.example.music.player.view.presenter.songs.SongsView
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.songs_fragment.*
+import kotlinx.android.synthetic.main.fragment_songs.*
 import kotlinx.android.synthetic.main.view_sliding_header.*
 import javax.inject.Inject
 
@@ -45,7 +45,7 @@ class SongsFragment private constructor() : SongsView, BaseFragment(), View.OnCl
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.songs_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_songs, container, false)
     }
 
     override fun onStart() {
@@ -61,23 +61,27 @@ class SongsFragment private constructor() : SongsView, BaseFragment(), View.OnCl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkWorkingConditions()
-        playSongBtn.setOnClickListener(this)
+        vPlaySongBtn.setOnClickListener(this)
 
         songsAdapter = SongAdapter(imageLoader) { song ->
-            presenter.playSong(song)
-            vSlidingSongName.text = song.songName
-            vSlidingArtistName.text = song.artistName
-            imageLoader.uploadImage(R.drawable.ic_pause, playSongBtn)
-            imageLoader.apply {
-                song.imageUrl?.let {
-                    uploadImage(song.imageUrl, R.drawable.music_placeholder, vSlidingSongImage)
-                } ?: uploadImage(song.imageBitmap, R.drawable.music_placeholder, vSlidingSongImage)
-            }
+            startPlayingSong(view.context, song)
         }
         vSongsList.apply {
             layoutManager =
                 LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             adapter = songsAdapter
+        }
+    }
+
+    private fun startPlayingSong(context: Context, song: Song) {
+        presenter.playSong(song, context)
+        vSlidingSongName.text = song.songName
+        vSlidingArtistName.text = song.artistName
+        imageLoader.uploadImage(R.drawable.ic_pause, vPlaySongBtn)
+        imageLoader.apply {
+            song.imageUrl?.let {
+                uploadImage(song.imageUrl, R.drawable.music_placeholder, vSlidingSongImage)
+            } ?: uploadImage(song.imageBitmap, R.drawable.music_placeholder, vSlidingSongImage)
         }
     }
 
@@ -112,11 +116,20 @@ class SongsFragment private constructor() : SongsView, BaseFragment(), View.OnCl
         super.onStop()
         presenter.detachView()
         compositeDisposable.clear()
-        presenter.releaseMediaPlayer()
+        //TODO remove this after creating mechanism of destroying MP after app is closed
+        presenter.destroy()
     }
 
     override fun displaySongs(songs: List<Song>) {
         songsAdapter.songsList = songs
+    }
+
+    override fun setPausedImage() {
+        imageLoader.uploadImage(R.drawable.ic_pause, vPlaySongBtn)
+    }
+
+    override fun setPlayImage() {
+        imageLoader.uploadImage(R.drawable.ic_play, vPlaySongBtn)
     }
 
     override fun showLoading() {
@@ -144,14 +157,8 @@ class SongsFragment private constructor() : SongsView, BaseFragment(), View.OnCl
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            playSongBtn.id -> {
-                if (presenter.isPlaying()) {
-                    presenter.pauseSong()
-                    imageLoader.uploadImage(R.drawable.ic_play, playSongBtn)
-                } else {
-                    presenter.restartPausedSong()
-                    imageLoader.uploadImage(R.drawable.ic_pause, playSongBtn)
-                }
+            vPlaySongBtn.id -> {
+                presenter.pauseOrPlayCurrentSong()
             }
         }
     }

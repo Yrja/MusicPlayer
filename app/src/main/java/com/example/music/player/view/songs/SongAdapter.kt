@@ -10,7 +10,7 @@ import com.example.music.player.model.entity.Song
 import com.example.music.player.view.image_helper.ImageLoader
 import kotlinx.android.synthetic.main.song_item.view.*
 
-class SongAdapter(private val imageLoader: ImageLoader, private val listener: (song: Song) -> Unit) :
+class SongAdapter(private val imageLoader: ImageLoader, private val onItemClickListener: (song: Song) -> Unit) :
     RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     var songsList: List<Song> = ArrayList()
@@ -40,7 +40,7 @@ class SongAdapter(private val imageLoader: ImageLoader, private val listener: (s
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val item = getItem(position)
         holder.itemView.setOnClickListener {
-            listener.invoke(item)
+            onItemClickListener.invoke(item)
         }
         holder.bind(item)
     }

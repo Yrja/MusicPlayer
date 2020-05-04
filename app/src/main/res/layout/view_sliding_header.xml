@@ -14,13 +14,13 @@
         android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
+            android:id="@+id/vSongImgContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/song_image_margin"
             card_view:cardCornerRadius="@dimen/song_image_corner_radius"
             card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+            card_view:layout_constraintEnd_toStartOf="@+id/vSongInfoContainer"
             card_view:layout_constraintHorizontal_bias="0.5"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="parent">
@@ -34,17 +34,16 @@
                 android:src="@drawable/music_placeholder" />
         </androidx.cardview.widget.CardView>
 
-
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/vSongInfoContainer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
             card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintEnd_toStartOf="@+id/playSongBtn"
+            card_view:layout_constraintEnd_toStartOf="@+id/vPlaySongBtn"
             card_view:layout_constraintHorizontal_bias="0.5"
-            card_view:layout_constraintStart_toEndOf="@+id/cardView2"
+            card_view:layout_constraintStart_toEndOf="@+id/vSongImgContainer"
             card_view:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -64,7 +63,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/playSongBtn"
+            android:id="@+id/vPlaySongBtn"
             android:layout_width="@dimen/song_image_size"
             android:layout_height="@dimen/song_image_size"
             android:layout_gravity="center"
@@ -73,8 +72,20 @@
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintHorizontal_bias="0.5"
-            card_view:layout_constraintStart_toEndOf="@+id/linearLayout2"
+            card_view:layout_constraintStart_toEndOf="@+id/vSongInfoContainer"
             card_view:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            tools:text="Detailed info about song" />
+    </LinearLayout>
 </LinearLayout>

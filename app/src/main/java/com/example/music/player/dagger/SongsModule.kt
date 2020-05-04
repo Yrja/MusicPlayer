@@ -1,6 +1,5 @@
 package com.example.music.player.dagger
 
-import com.example.music.player.PlayerApplication
 import com.example.music.player.model.SongsRepository
 import com.example.music.player.model.songs.SongsInteractor
 import com.example.music.player.model.songs.SongsInteractorImpl
@@ -29,7 +28,4 @@ class SongsModule {
 
     @Provides
     fun provideImageLoader(): ImageLoader = ImageLoaderImpl()
-
-    @Provides
-    fun provideSongManager(application: PlayerApplication): SongManager = SongManager(application)
 }
